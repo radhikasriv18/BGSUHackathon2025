@@ -34,7 +34,8 @@ export default function Signup() {
       phone: phone || null,
     });
 
-    router.replace('/onboarding' as const);
+    router.replace('/verify' as const);
+
   };
 
   return (
