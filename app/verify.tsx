@@ -1,9 +1,10 @@
 import { View, Text, TextInput, StyleSheet, Button, Alert } from 'react-native';
 import { useState } from 'react';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 
 export default function Verify() {
   const router = useRouter();
+  const { email } = useLocalSearchParams(); // ⬅️ Get email passed from signup
   const [otp, setOtp] = useState(['', '', '', '']);
 
   const handleChange = (text: string, index: number) => {
@@ -12,18 +13,34 @@ export default function Verify() {
     setOtp(newOtp);
   };
 
-  const handleVerify = () => {
+  const handleVerify = async () => {
     const code = otp.join('');
     if (code.length < 4) {
       Alert.alert('Invalid OTP', 'Please enter the full code');
       return;
     }
 
-    console.log('Entered OTP:', code);
-    // TODO: Send OTP to backend for verification
-    router.replace('/onboarding' as const);
+    try {
+      const res = await fetch('https://your-backend.com/auth/verify-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email,
+          otp: code,
+        }),
+      });
 
+      const data = await res.json();
 
+      if (res.ok && data.status === 'verified') {
+        router.replace('/onboarding' as const);
+      } else {
+        Alert.alert('OTP Failed', data.message || 'Invalid OTP');
+      }
+    } catch (error) {
+      console.error(error);
+      Alert.alert('Error', 'Something went wrong. Please try again.');
+    }
   };
 
   return (
