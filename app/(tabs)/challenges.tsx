@@ -94,6 +94,9 @@ export default function ChallengesScreen() {
                 {/* Challenge Box */}
                 <View style={styles.challengeBox}>
                   <Text style={styles.challengeName}>{item.challenge_name}</Text>
+                  <Text style={styles.challengeDescription}>
+                    {item.description || 'No description'}
+                  </Text>
                   <Text style={styles.expiryText}>
                     Expires on: {expiryDate.toDateString()}
                   </Text>
@@ -187,9 +190,16 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     marginBottom: 4,
+    color: '#000',
+  },
+  challengeDescription: {
+    fontSize: 14,
+    color: '#333',
+    marginBottom: 4,
+    fontStyle: 'italic',
   },
   expiryText: {
-    fontSize: 14,
+    fontSize: 13,
     color: '#666',
     fontStyle: 'italic',
   },
