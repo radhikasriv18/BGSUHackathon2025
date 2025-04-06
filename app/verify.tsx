@@ -23,7 +23,7 @@ export default function Verify() {
     }
     setLoading(true);
     try {
-      const res = await fetch('https://your-backend.com/auth/verify-otp', {
+      const res = await fetch('http://127.0.0.1:8000/otp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, otp: code }),
