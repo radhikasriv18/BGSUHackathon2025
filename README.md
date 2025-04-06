@@ -4,11 +4,9 @@
 
 ### Video Link: https://drive.google.com/file/d/12IBnfeR4MfEMTw1yBF2-NrfbX1cyoXOR/view?usp=sharing
 
-# 🩺 Health & Wellness App
+## 🩺 Health & Wellness App
 
 Welcome to the *Health & Wellness App* — a mobile platform that encourages healthy habits, social motivation, and friendly competition. Users can share health-related posts, view wellness updates from others, and create or join health challenges to stay accountable and inspired.
-
----
 
 ## 🚀 Features
 
@@ -25,8 +23,6 @@ Welcome to the *Health & Wellness App* — a mobile platform that encourages hea
 - Create personalized health challenges (e.g., "Drink 2L water/day")
 - Compete or collaborate with friends by joining challenges
 - View challenges you've participated in or created
-
----
 
 ## 🧑‍💻 Tech Stack
 
