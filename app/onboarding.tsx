@@ -27,6 +27,14 @@ export default function Onboarding() {
       return;
     }
 
+    const heightInt = parseInt(height);
+    const weightInt = parseInt(weight);
+
+    if (isNaN(heightInt) || isNaN(weightInt)) {
+      Alert.alert('Invalid Data', 'Height and weight must be numbers.');
+      return;
+    }
+
     const userData = { dob, gender, height, weight, smoking, alcohol };
 
     try {
