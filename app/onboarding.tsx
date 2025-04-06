@@ -1,10 +1,12 @@
-import { View, Text, TextInput, StyleSheet, Button, TouchableOpacity } from 'react-native';
+// 📄 onboarding.tsx (Styled Version)
+import { View, Text, TextInput, StyleSheet, Button, TouchableOpacity, ScrollView } from 'react-native';
 import { useState } from 'react';
 import { useRouter } from 'expo-router';
 
 export default function Onboarding() {
   const router = useRouter();
 
+  const [dob, setDob] = useState('');
   const [gender, setGender] = useState('');
   const [height, setHeight] = useState('');
   const [weight, setWeight] = useState('');
@@ -12,38 +14,37 @@ export default function Onboarding() {
   const [alcohol, setAlcohol] = useState('');
 
   const handleSubmit = () => {
-    if (!gender || !height || !weight || !smoking || !alcohol) {
+    if (!dob || !gender || !height || !weight || !smoking || !alcohol) {
       alert('Please fill in all fields');
       return;
     }
 
-    const userData = {
-      gender,
-      height,
-      weight,
-      smoking,
-      alcohol,
-    };
-
+    const userData = { dob, gender, height, weight, smoking, alcohol };
     console.log('User Onboarding Info:', userData);
-    // TODO: Send this to backend
 
-   router.replace('/(tabs)' as const);
- // Navigate to main screen after onboarding
+    // TODO: Send this to backend
+    router.replace('/(tabs)');
   };
 
-  const SelectButton = ({ label, value, setter }: { label: string; value: string; setter: (val: string) => void }) => (
+  const SelectButton = ({ label, value, setter }) => (
     <TouchableOpacity
       style={[styles.option, value === label && styles.optionSelected]}
-      onPress={() => setter(label)}
-    >
-      <Text>{label}</Text>
+      onPress={() => setter(label)}>
+      <Text style={{ color: value === label ? '#fff' : '#333' }}>{label}</Text>
     </TouchableOpacity>
   );
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Tell us about yourself</Text>
+    <ScrollView contentContainerStyle={styles.container}>
+      <Text style={styles.title}>Let's Get to Know You 🎯</Text>
+
+      <Text style={styles.label}>Date of Birth (YYYY-MM-DD)</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="1995-06-15"
+        value={dob}
+        onChangeText={setDob}
+      />
 
       <Text style={styles.label}>Gender</Text>
       <View style={styles.row}>
@@ -53,10 +54,20 @@ export default function Onboarding() {
       </View>
 
       <Text style={styles.label}>Height (cm)</Text>
-      <TextInput style={styles.input} keyboardType="numeric" onChangeText={setHeight} value={height} />
+      <TextInput
+        style={styles.input}
+        keyboardType="numeric"
+        onChangeText={setHeight}
+        value={height}
+      />
 
       <Text style={styles.label}>Weight (kg)</Text>
-      <TextInput style={styles.input} keyboardType="numeric" onChangeText={setWeight} value={weight} />
+      <TextInput
+        style={styles.input}
+        keyboardType="numeric"
+        onChangeText={setWeight}
+        value={weight}
+      />
 
       <Text style={styles.label}>Do you smoke?</Text>
       <View style={styles.row}>
@@ -72,35 +83,67 @@ export default function Onboarding() {
         <SelectButton label="No" value={alcohol} setter={setAlcohol} />
       </View>
 
-      <Button title="Continue" onPress={handleSubmit} />
-    </View>
+      <TouchableOpacity style={styles.button} onPress={handleSubmit}>
+        <Text style={styles.buttonText}>Continue</Text>
+      </TouchableOpacity>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { padding: 20, marginTop: 40 },
-  title: { fontSize: 24, fontWeight: 'bold', marginBottom: 20 },
-  label: { marginTop: 15, marginBottom: 5, fontWeight: '600' },
+  container: {
+    padding: 24,
+    backgroundColor: '#f0f4f8',
+  },
+  title: {
+    fontSize: 26,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: 20,
+    color: '#1d3557',
+  },
+  label: {
+    fontWeight: '600',
+    marginTop: 15,
+    marginBottom: 5,
+    color: '#333',
+  },
   input: {
+    backgroundColor: '#fff',
     borderWidth: 1,
     borderColor: '#ccc',
-    borderRadius: 6,
-    padding: 10,
+    borderRadius: 10,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    marginBottom: 10,
   },
   row: {
     flexDirection: 'row',
-    gap: 10,
     flexWrap: 'wrap',
-  },
-  option: {
-    padding: 10,
-    borderWidth: 1,
-    borderColor: '#aaa',
-    borderRadius: 6,
+    gap: 10,
     marginBottom: 10,
   },
+  option: {
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    backgroundColor: '#e6e6e6',
+    borderRadius: 10,
+    marginRight: 8,
+    marginBottom: 8,
+  },
   optionSelected: {
-    backgroundColor: '#add8e6',
-    borderColor: '#007aff',
+    backgroundColor: '#0077ff',
+  },
+  button: {
+    backgroundColor: '#0077ff',
+    borderRadius: 10,
+    paddingVertical: 14,
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
   },
 });
