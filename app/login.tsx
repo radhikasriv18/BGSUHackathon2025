@@ -1,4 +1,3 @@
-// 📄 login.tsx (Styled Version with Header Hidden)
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
 import { useState } from 'react';
 import { useRouter } from 'expo-router';
@@ -31,7 +30,7 @@ export default function Login() {
       });
       const data = await response.json();
       console.log(data)
-      if (response.ok ) {
+      if (response.ok) {
         await AsyncStorage.setItem('authToken', data.token);
         router.replace('/(tabs)');
       } else {
@@ -47,7 +46,7 @@ export default function Login() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Welcome Back 👋</Text>
+      <Text style={styles.title}>Welcome Back</Text>
       <Text style={styles.subtitle}>Log in to continue</Text>
 
       {errorMessage !== '' && <Text style={styles.error}>{errorMessage}</Text>}
@@ -55,12 +54,14 @@ export default function Login() {
       <TextInput
         style={styles.input}
         placeholder="Username or Email"
+        placeholderTextColor="#555"
         onChangeText={setUsernameOrEmail}
         autoCapitalize="none"
       />
       <TextInput
         style={styles.input}
         placeholder="Password"
+        placeholderTextColor="#555"
         secureTextEntry
         onChangeText={setPassword}
       />
@@ -70,33 +71,85 @@ export default function Login() {
       </TouchableOpacity>
 
       <Text style={styles.link} onPress={() => router.push('/signup')}>
-        Don't have an account? <Text style={{ fontWeight: '600' }}>Sign up</Text>
+        Don't have an account? <Text style={styles.linkStrong}>Sign up</Text>
       </Text>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 24, justifyContent: 'center', backgroundColor: '#f0f4f8' },
-  title: { fontSize: 28, fontWeight: 'bold', marginBottom: 6, textAlign: 'center', color: '#1d3557' },
-  subtitle: { fontSize: 16, color: '#555', marginBottom: 20, textAlign: 'center' },
+  container: {
+    flex: 1,
+    padding: 24,
+    justifyContent: 'center',
+    backgroundColor: '#D0D4D5',
+  },
+  title: {
+    fontSize: 32,
+    fontWeight: 'bold',
+    fontStyle: 'italic',
+    marginBottom: 6,
+    textAlign: 'center',
+    color: '#000',
+  },
+  subtitle: {
+    fontSize: 20,
+    color: '#000',
+    marginBottom: 20,
+    textAlign: 'center',
+    fontWeight: 'bold',
+    fontStyle: 'italic',
+  },
   input: {
-    backgroundColor: '#fff',
-    borderRadius: 10,
+    backgroundColor: '#E7E9EA',
+    borderRadius: 12,
     paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    marginBottom: 14,
+    paddingVertical: 14,
+    borderWidth: 1.5,
+    borderColor: '#000',
+    marginBottom: 16,
+    fontSize: 16,
+    fontWeight: 'bold',
+    fontStyle: 'italic',
+    color: '#000',
   },
   button: {
-    backgroundColor: '#0077ff',
-    borderRadius: 10,
-    paddingVertical: 14,
+    backgroundColor: '#333333',
+    borderRadius: 12,
+    paddingVertical: 16,
     alignItems: 'center',
-    marginTop: 4,
+    marginTop: 6,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+    elevation: 4,
   },
-  buttonText: { color: '#fff', fontSize: 16, fontWeight: '600' },
-  link: { color: '#0077cc', marginTop: 20, textAlign: 'center' },
-  error: { color: 'red', textAlign: 'center', marginBottom: 10 },
+  buttonText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: 'bold',
+    fontStyle: 'italic',
+  },
+  link: {
+    color: '#000',
+    marginTop: 24,
+    textAlign: 'center',
+    fontSize: 16,
+    fontWeight: 'bold',
+    fontStyle: 'italic',
+  },
+  linkStrong: {
+    fontWeight: 'bold',
+    fontStyle: 'italic',
+    color: '#000',
+  },
+  error: {
+    color: '#000',
+    textAlign: 'center',
+    marginBottom: 12,
+    fontSize: 16,
+    fontWeight: 'bold',
+    fontStyle: 'italic',
+  },
 });

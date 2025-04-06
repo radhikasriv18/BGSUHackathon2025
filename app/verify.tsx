@@ -26,18 +26,12 @@ export default function Verify() {
       Alert.alert('Error', 'No token found. Please log in again.');
       return;
     }
-    console.log(token)
-    console.log(code)
+
     setLoading(true);
     try {
       const res = await fetch('http://127.0.0.1:8000/otp', {
         method: 'POST',
-        // headers: {
-        //   'Content-Type': 'application/json',
-        //   Authorization: `Bearer ${token}`, // ✅ Include the token here
-        // },
-        
-        body: JSON.stringify({ entered_otp: code, access_token: token}),
+        body: JSON.stringify({ entered_otp: code, access_token: token }),
       });
 
       const data = await res.json();
@@ -76,7 +70,7 @@ export default function Verify() {
         {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.buttonText}>Verify</Text>}
       </TouchableOpacity>
 
-      <Text style={styles.resend}>Didn’t get the code? <Text style={{ fontWeight: '600' }}>Resend</Text></Text>
+      <Text style={styles.resend}>Didn’t get the code? <Text style={styles.resendStrong}>Resend</Text></Text>
     </View>
   );
 }
@@ -86,19 +80,22 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 24,
     justifyContent: 'center',
-    backgroundColor: '#f0f4f8',
+    backgroundColor: '#D0D4D5',
   },
   title: {
-    fontSize: 28,
+    fontSize: 32,
     fontWeight: 'bold',
+    fontStyle: 'italic',
     textAlign: 'center',
-    color: '#1d3557',
+    color: '#000',
   },
   subtitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    fontStyle: 'italic',
     textAlign: 'center',
-    color: '#555',
+    color: '#000',
     marginBottom: 30,
-    fontSize: 16,
   },
   otpRow: {
     flexDirection: 'row',
@@ -106,29 +103,46 @@ const styles = StyleSheet.create({
     marginBottom: 30,
   },
   otpInput: {
-    width: 50,
-    height: 50,
-    borderWidth: 1,
-    borderColor: '#aaa',
+    width: 60,
+    height: 60,
+    borderWidth: 1.5,
+    borderColor: '#000',
     textAlign: 'center',
-    fontSize: 20,
-    borderRadius: 10,
-    backgroundColor: '#fff',
+    fontSize: 22,
+    borderRadius: 12,
+    backgroundColor: '#E7E9EA',
+    fontWeight: 'bold',
+    fontStyle: 'italic',
+    color: '#000',
   },
   button: {
-    backgroundColor: '#0077ff',
-    borderRadius: 10,
-    paddingVertical: 14,
+    backgroundColor: '#333333',
+    borderRadius: 12,
+    paddingVertical: 16,
     alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+    elevation: 4,
   },
   buttonText: {
     color: '#fff',
-    fontSize: 16,
-    fontWeight: '600',
+    fontSize: 18,
+    fontWeight: 'bold',
+    fontStyle: 'italic',
   },
   resend: {
-    color: '#0077cc',
+    color: '#000',
     textAlign: 'center',
-    marginTop: 20,
+    marginTop: 24,
+    fontSize: 16,
+    fontWeight: 'bold',
+    fontStyle: 'italic',
+  },
+  resendStrong: {
+    fontWeight: 'bold',
+    fontStyle: 'italic',
+    color: '#000',
   },
 });

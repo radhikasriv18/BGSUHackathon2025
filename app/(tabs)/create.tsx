@@ -1,8 +1,7 @@
-import { StyleSheet, TextInput, Button, ScrollView, Image, View, TouchableOpacity, Text } from 'react-native';
+import { StyleSheet, TextInput, ScrollView, Image, View, TouchableOpacity, Text } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { useState } from 'react';
 import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
 
 export default function CreatePostScreen() {
   const [media, setMedia] = useState<string | null>(null);
@@ -47,6 +46,7 @@ export default function CreatePostScreen() {
         multiline
         value={caption}
         onChangeText={setCaption}
+        placeholderTextColor="#555"
       />
 
       <TouchableOpacity style={styles.postButton} onPress={handlePost}>
@@ -61,50 +61,63 @@ const styles = StyleSheet.create({
     padding: 24,
     gap: 16,
     flexGrow: 1,
-    justifyContent: 'center', // 💡 Vertically center when content is small
-    backgroundColor: '#f7f7f7',
+    justifyContent: 'center',
+    backgroundColor: '#D0D4D5',
   },
   title: {
-    fontSize: 24,
+    fontSize: 46,
     fontWeight: 'bold',
+    fontStyle: 'italic',
     textAlign: 'center',
+    color: '#000',
+    marginBottom: 10,
   },
   mediaButton: {
-    backgroundColor: '#007AFF',
-    paddingVertical: 10,
-    borderRadius: 8,
+    backgroundColor: '#333333',
+    paddingVertical: 12,
+    borderRadius: 10,
     alignItems: 'center',
   },
   mediaButtonText: {
     color: '#fff',
-    fontWeight: '600',
-    fontSize: 15,
+    fontWeight: 'bold',
+    fontStyle: 'italic',
+    fontSize: 16,
   },
   preview: {
     width: '100%',
-    height: 200,
+    height: 220,
     borderRadius: 12,
-    backgroundColor: '#eee',
+    backgroundColor: '#E7E9EA',
   },
   input: {
-    minHeight: 80,
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 8,
-    padding: 10,
-    fontSize: 14,
-    backgroundColor: '#fff',
+    minHeight: 100,
+    borderWidth: 1.5,
+    borderColor: '#000',
+    borderRadius: 10,
+    padding: 12,
+    fontSize: 16,
+    fontWeight: 'bold',
+    fontStyle: 'italic',
+    backgroundColor: '#E7E9EA',
     textAlignVertical: 'top',
+    color: '#000',
   },
   postButton: {
-    backgroundColor: '#28C76F',
-    paddingVertical: 10,
-    borderRadius: 8,
+    backgroundColor: '#333333',
+    paddingVertical: 14,
+    borderRadius: 10,
     alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+    elevation: 4,
   },
   postButtonText: {
     color: '#fff',
-    fontWeight: '600',
-    fontSize: 15,
+    fontWeight: 'bold',
+    fontStyle: 'italic',
+    fontSize: 16,
   },
 });
