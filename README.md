@@ -1,54 +1,42 @@
-<<<<<<< HEAD
-# Welcome to your Expo app 👋
-
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
-
-## Get started
-
-1. Install dependencies
-
-   ```bash
-   npm install
-   ```
-
-2. Start the app
-
-   ```bash
-    npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
-```
-
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
-=======
 # BGSUHackathon2025
->>>>>>> adf52eeb6877310c1c993e6510575cf74b4e657b
+
+# Project Name: FitLinked
+
+# Video Link: https://drive.google.com/file/d/12IBnfeR4MfEMTw1yBF2-NrfbX1cyoXOR/view?usp=sharing
+
+# 🩺 Health & Wellness App
+
+Welcome to the *Health & Wellness App* — a mobile platform that encourages healthy habits, social motivation, and friendly competition. Users can share health-related posts, view wellness updates from others, and create or join health challenges to stay accountable and inspired.
+
+---
+
+## 🚀 Features
+
+### 📝 Health Posts
+- Users can create posts with captions and optional images
+- Share daily routines, workout snapshots, healthy meals, or motivational tips
+- Posts appear in a community feed for others to view and draw inspiration
+
+### 👀 View Community Posts
+- Scroll through health updates posted by others
+- Get exposed to new ideas, diets, routines, and motivation from real people
+
+### 🏆 Health Challenges
+- Create personalized health challenges (e.g., "Drink 2L water/day")
+- Compete or collaborate with friends by joining challenges
+- View challenges you've participated in or created
+
+---
+
+## 🧑‍💻 Tech Stack
+
+### 💡 Frontend
+- *React Native* (with Expo) for cross-platform mobile development
+- *AsyncStorage* for secure token storage
+- *expo-image-picker* for selecting and uploading images
+
+### 🔙 Backend
+- *Django* and *Django REST Framework*
+- *JWT Authentication* using SimpleJWT
+- *Image upload support* via multipart/form-data
+- *SQLite/PostgreSQL* for persistent data storage
