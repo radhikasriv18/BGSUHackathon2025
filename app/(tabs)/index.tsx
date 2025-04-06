@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from 'react';
+  import { useFocusEffect } from 'expo-router';
+
 import {
   View,
   Text,
@@ -15,11 +17,29 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
-  useEffect(() => {
-    fetch('http://127.0.0.1:8000/home') // Use 10.0.2.2 for Android emulator
+  // useEffect(() => {
+  //   fetch('http://127.0.0.1:8000/home') // Use 10.0.2.2 for Android emulator
+  //     .then((res) => res.json())
+  //     .then((data) => {
+  //       console.log('Fetched data:', data);
+  //       setPosts(data);
+  //       setLoading(false);
+  //     })
+  //     .catch((error) => {
+  //       console.error('Error fetching posts:', error);
+  //       setLoading(false);
+  //     });
+  // }, []);
+
+
+
+// remove current useEffect and replace with:
+useFocusEffect(
+  React.useCallback(() => {
+    setLoading(true);
+    fetch('http://127.0.0.1:8000/home')
       .then((res) => res.json())
       .then((data) => {
-        console.log('Fetched data:', data);
         setPosts(data);
         setLoading(false);
       })
@@ -27,7 +47,8 @@ export default function Home() {
         console.error('Error fetching posts:', error);
         setLoading(false);
       });
-  }, []);
+  }, [])
+);
 
   return (
     <View style={styles.container}>
