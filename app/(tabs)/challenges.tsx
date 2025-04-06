@@ -1,193 +1,206 @@
-import { StyleSheet, Text, View, ScrollView, TouchableOpacity } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import { useUser } from '../contexts/userContext';
-import { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ScrollView,
+  ActivityIndicator,
+  Alert,
+} from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
 
 export default function ChallengesScreen() {
-  const { user } = useUser();
+  const [challenges, setChallenges] = useState([]);
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
-  const [hasChallenge, setHasChallenge] = useState(false);
 
-  if (!hasChallenge) {
+  useEffect(() => {
+    const fetchChallenges = async () => {
+      const token = await AsyncStorage.getItem('access_token');
+      if (!token) {
+        Alert.alert('Error', 'Authentication failed. Please log in again.');
+        return;
+      }
+
+      try {
+        const formData = new FormData();
+        formData.append('access_token', token);
+
+        const res = await fetch('http://127.0.0.1:8000/viewchallenges', {
+          method: 'POST',
+          body: formData,
+        });
+
+        const data = await res.json();
+        if (res.ok) {
+          setChallenges(data);
+        } else {
+          console.error('Fetch failed:', data);
+        }
+      } catch (err) {
+        console.error('API error:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchChallenges();
+  }, []);
+
+  if (loading) {
     return (
-      <View style={styles.emptyContainer}>
-        <Text style={styles.title}>You haven’t started any challenges yet.</Text>
-        <Text style={styles.subtitle}>Create one and invite a friend to get going!</Text>
-
-        <TouchableOpacity style={styles.button} onPress={() => router.push('/createchallenge')}>
-          <Text style={styles.buttonText}>Create Your First Challenge</Text>
-        </TouchableOpacity>
+      <View style={styles.center}>
+        <ActivityIndicator size="large" color="#000" />
       </View>
     );
   }
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.greeting}>Hi {user?.name || 'User'}</Text>
-
-      <View style={styles.streakContainer}>
-        <Ionicons name="flame-outline" size={20} color="#ff5c5c" />
-        <Text style={styles.streakText}>6-day streak</Text>
-      </View>
-
-      <View style={styles.card}>
-        <Text style={styles.cardTitle}>Challenge Title</Text>
-        <Text style={styles.cardDesc}>Description goes here...</Text>
-
-        <View style={styles.avatarRow}>
-          <View style={styles.avatar}>
-            <Ionicons name="person-circle" size={40} color="#666" />
-            <Text style={styles.username}>User A</Text>
-          </View>
-          <View style={styles.avatar}>
-            <Ionicons name="person-circle" size={40} color="#666" />
-            <Text style={styles.username}>User B</Text>
-          </View>
-        </View>
-
-        <TouchableOpacity style={styles.postButton} onPress={() => router.push('/upload-proof')}>
-          <Text style={styles.buttonText}>Post Proof</Text>
+    <View style={styles.container}>
+      {/* Header Row */}
+      <View style={styles.header}>
+        <Text style={styles.heading}>Challenges</Text>
+        <TouchableOpacity
+          style={styles.createButton}
+          onPress={() => router.push('/createchallenge')}
+        >
+          <Ionicons name="add-circle-outline" size={24} color="#fff" />
+          <Text style={styles.createButtonText}>New</Text>
         </TouchableOpacity>
-
-        <Text style={styles.sectionLabel}>Day 1</Text>
-        <View style={styles.proofRow}>
-          <Text style={styles.proofText}>User A</Text>
-          <Text style={styles.proofText}>✅</Text>
-        </View>
-        <View style={styles.proofRow}>
-          <Text style={styles.proofText}>User B</Text>
-          <Text style={styles.proofText}>❌</Text>
-        </View>
       </View>
-    </ScrollView>
+
+      {challenges.length === 0 ? (
+        <View style={styles.center}>
+          <Text style={styles.emptyText}>You haven’t started any challenges yet.</Text>
+          <Text style={styles.subText}>Invite a friend and get going!</Text>
+        </View>
+      ) : (
+        <ScrollView contentContainerStyle={styles.list}>
+          {challenges.map((item, index) => {
+            const createdAt = new Date(item.created_at);
+            const expiryDate = new Date(createdAt);
+            expiryDate.setDate(expiryDate.getDate() + 1);
+
+            return (
+              <View key={index} style={styles.card}>
+                {/* Header: friend vs creator */}
+                <Text style={styles.cardHeader}>
+                  {item.friend_name} vs {item.creator_name}
+                </Text>
+
+                {/* Challenge Box */}
+                <View style={styles.challengeBox}>
+                  <Text style={styles.challengeName}>{item.challenge_name}</Text>
+                  <Text style={styles.challengeDescription}>
+                    {item.description || 'No description'}
+                  </Text>
+                  <Text style={styles.expiryText}>
+                    Expires on: {expiryDate.toDateString()}
+                  </Text>
+                </View>
+              </View>
+            );
+          })}
+        </ScrollView>
+      )}
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    padding: 20,
-    paddingBottom: 100,
-    gap: 20,
+    flex: 1,
     backgroundColor: '#D0D4D5',
+    paddingTop: 60,
+    paddingHorizontal: 20,
   },
-  emptyContainer: {
+  center: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    gap: 14,
-    padding: 30,
-    backgroundColor: '#D0D4D5',
   },
-  title: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    fontStyle: 'italic',
-    textAlign: 'center',
-    color: '#000',
-  },
-  subtitle: {
-    textAlign: 'center',
-    fontSize: 15,
+  heading: {
+    fontSize: 26,
     fontWeight: 'bold',
     fontStyle: 'italic',
     color: '#000',
   },
-  button: {
-    backgroundColor: '#333333',
-    paddingVertical: 14,
-    paddingHorizontal: 20,
-    borderRadius: 10,
-    marginTop: 10,
-  },
-  buttonText: {
-    color: '#fff',
-    fontWeight: 'bold',
+  subText: {
+    marginTop: 6,
     fontStyle: 'italic',
-    fontSize: 15,
+    fontSize: 14,
+    color: '#555',
+  },
+  emptyText: {
+    fontSize: 18,
+    fontWeight: '600',
+    fontStyle: 'italic',
     textAlign: 'center',
-  },
-  greeting: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    fontStyle: 'italic',
     color: '#000',
   },
-  streakContainer: {
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  createButton: {
+    backgroundColor: '#333',
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 8,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    backgroundColor: '#fceaea',
-    padding: 10,
-    borderRadius: 8,
-    alignSelf: 'flex-start',
   },
-  streakText: {
-    fontSize: 16,
-    color: '#ff5c5c',
+  createButtonText: {
+    color: '#fff',
     fontWeight: 'bold',
     fontStyle: 'italic',
+    fontSize: 14,
+  },
+  list: {
+    gap: 16,
+    paddingBottom: 40,
   },
   card: {
-    backgroundColor: '#E7E9EA',
+    backgroundColor: '#fff',
     padding: 16,
     borderRadius: 12,
-    gap: 12,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
     elevation: 2,
   },
-  cardTitle: {
-    fontSize: 18,
+  cardHeader: {
+    fontSize: 16,
     fontWeight: 'bold',
-    fontStyle: 'italic',
     color: '#000',
-  },
-  cardDesc: {
-    fontSize: 15,
-    fontStyle: 'italic',
-    color: '#000',
-  },
-  avatarRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingHorizontal: 10,
-  },
-  avatar: {
-    alignItems: 'center',
-    gap: 4,
-  },
-  username: {
-    fontSize: 14,
-    color: '#000',
-    fontWeight: 'bold',
+    marginBottom: 10,
     fontStyle: 'italic',
   },
-  postButton: {
-    backgroundColor: '#333333',
-    paddingVertical: 12,
+  challengeBox: {
+    backgroundColor: '#f1f1f1',
+    padding: 12,
     borderRadius: 10,
-    alignItems: 'center',
+    borderLeftWidth: 4,
+    borderLeftColor: '#333',
   },
-  sectionLabel: {
-    marginTop: 10,
+  challengeName: {
+    fontSize: 16,
     fontWeight: 'bold',
-    fontStyle: 'italic',
-    fontSize: 15,
+    marginBottom: 4,
     color: '#000',
   },
-  proofRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingHorizontal: 10,
-    marginTop: 4,
-  },
-  proofText: {
-    fontSize: 15,
-    fontWeight: 'bold',
+  challengeDescription: {
+    fontSize: 14,
+    color: '#333',
+    marginBottom: 4,
     fontStyle: 'italic',
-    color: '#000',
+  },
+  expiryText: {
+    fontSize: 13,
+    color: '#666',
+    fontStyle: 'italic',
   },
 });

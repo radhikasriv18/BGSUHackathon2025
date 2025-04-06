@@ -1,4 +1,6 @@
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -9,11 +11,16 @@ export default function Settings() {
     router.push('/profile');
   };
 
-  const handleLogout = () => {
-    // TODO: Clear token/session from AsyncStorage if using auth
+  const handleLogout = async () => {
+  try {
+    await AsyncStorage.removeItem('access_token');
+    Alert.alert('Logged out', 'You have been successfully logged out.');
     router.replace('/login');
-  };
-
+  } catch (error) {
+    console.error('Logout error:', error);
+    Alert.alert('Error', 'Failed to log out. Please try again.');
+  }
+};
   const handleBackToHome = () => {
     router.replace('/(tabs)');// 👈 Navigates back to Home screen in (tabs)
   };
