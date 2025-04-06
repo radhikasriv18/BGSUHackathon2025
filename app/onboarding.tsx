@@ -35,16 +35,19 @@ export default function Onboarding() {
     }
     console.log(token)
 
-    const userData = { dob, gender, height, weight, smoking, alcohol };
-    console.log(userData)
+    const userData = {
+      access_token: token,
+      dob,
+      gender,
+      height: heightInt,
+      weight: weightInt,
+      smoking,
+      alcohol,
+    };
     try {
       setLoading(true);
       const response = await fetch('http://127.0.0.1:8000/onboarding', {
         method: 'POST',
-        // headers: {
-        //   'Content-Type': 'application/json',
-        //   Authorization: `Bearer ${token}`, // ✅ include token
-        // },
         body: JSON.stringify(userData),
       });
 
