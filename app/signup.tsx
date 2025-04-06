@@ -10,7 +10,7 @@ const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d).{6,}$/;
 
 export default function Signup() {
   const router = useRouter();
-  const { setUser } = useUser(); // Access setUser from global context
+  const { setUser } = useUser();
 
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
@@ -75,14 +75,10 @@ export default function Signup() {
 
       if (response.ok) {
         const { access_token, user_id, success } = data;
-      
+
         if (success && access_token) {
           await AsyncStorage.setItem('access_token', access_token);
-          console.log(success);
-          console.log(access_token);
-          // await AsyncStorage.setItem('user_id', String(user_id)); 
-      
-          router.replace({ pathname: '/verify' }); 
+          router.replace({ pathname: '/verify' });
         } else {
           setErrorMessage('Signup failed. Missing token.');
         }
@@ -98,7 +94,7 @@ export default function Signup() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Create Account</Text>
-      <Text style={styles.subtitle}>Join the health community 🚀</Text>
+      <Text style={styles.subtitle}>Join the health community</Text>
 
       {errorMessage !== '' && <Text style={styles.error}>{errorMessage}</Text>}
 
@@ -150,47 +146,102 @@ export default function Signup() {
       </TouchableOpacity>
 
       <Text style={styles.link} onPress={() => router.push('/login')}>
-        Already have an account? <Text style={{ fontWeight: '600' }}>Login</Text>
+        Already have an account? <Text style={styles.linkStrong}>Login</Text>
       </Text>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 24, backgroundColor: '#f0f4f8', justifyContent: 'center' },
-  title: { fontSize: 28, fontWeight: 'bold', textAlign: 'center', color: '#1d3557' },
-  subtitle: { fontSize: 16, color: '#555', marginBottom: 20, textAlign: 'center' },
-  error: { color: 'red', textAlign: 'center', marginBottom: 10 },
+  container: {
+    flex: 1,
+    padding: 24,
+    backgroundColor: '#D0D4D5',
+    justifyContent: 'center',
+  },
+  title: {
+    fontSize: 40,
+    fontWeight: 'bold',
+    fontStyle: 'italic',
+    textAlign: 'center',
+    color: '#000',
+  },
+  subtitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    fontStyle: 'italic',
+    color: '#000',
+    marginBottom: 20,
+    textAlign: 'center',
+  },
+  error: {
+    color: '#000',
+    textAlign: 'center',
+    marginBottom: 12,
+    fontSize: 16,
+    fontWeight: 'bold',
+    fontStyle: 'italic',
+  },
   input: {
-    backgroundColor: '#fff',
-    borderRadius: 10,
+    backgroundColor: '#E7E9EA',
+    borderRadius: 12,
     paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderWidth: 1,
-    borderColor: '#ccc',
+    paddingVertical: 14,
+    borderWidth: 1.5,
+    borderColor: '#000',
     marginBottom: 14,
+    fontSize: 16,
+    fontWeight: 'bold',
+    fontStyle: 'italic',
+    color: '#000',
   },
   passwordContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 10,
-    paddingHorizontal: 10,
+    borderWidth: 1.5,
+    borderColor: '#000',
+    borderRadius: 12,
+    paddingHorizontal: 12,
     marginBottom: 14,
-    backgroundColor: '#fff',
+    backgroundColor: '#E7E9EA',
   },
   passwordInput: {
     flex: 1,
-    paddingVertical: 10,
+    paddingVertical: 12,
+    fontSize: 16,
+    fontWeight: 'bold',
+    fontStyle: 'italic',
+    color: '#000',
   },
   button: {
-    backgroundColor: '#0077ff',
-    borderRadius: 10,
-    paddingVertical: 14,
+    backgroundColor: '#333333',
+    borderRadius: 12,
+    paddingVertical: 16,
     alignItems: 'center',
-    marginTop: 4,
+    marginTop: 6,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+    elevation: 4,
   },
-  buttonText: { color: '#fff', fontSize: 16, fontWeight: '600' },
-  link: { color: '#0077cc', marginTop: 20, textAlign: 'center' },
+  buttonText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: 'bold',
+    fontStyle: 'italic',
+  },
+  link: {
+    color: '#000',
+    marginTop: 24,
+    textAlign: 'center',
+    fontSize: 16,
+    fontWeight: 'bold',
+    fontStyle: 'italic',
+  },
+  linkStrong: {
+    fontWeight: 'bold',
+    fontStyle: 'italic',
+    color: '#000',
+  },
 });

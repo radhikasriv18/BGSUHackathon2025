@@ -1,4 +1,3 @@
-// 📄 Home.tsx (Settings icon inside content, top-right position manually styled)
 import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -16,9 +15,9 @@ export default function Home() {
     <View style={styles.container}>
       {/* Top Bar with Title + Settings Button */}
       <View style={styles.topBar}>
-        <Text style={styles.heading}>🌟 Community Feed</Text>
+        <Text style={styles.heading}>Community Feed</Text>
         <TouchableOpacity onPress={() => router.push('/settings')}>
-          <Ionicons name="settings-outline" size={26} color="#333" />
+          <Ionicons name="settings-outline" size={26} color="#000" />
         </TouchableOpacity>
       </View>
 
@@ -26,7 +25,7 @@ export default function Home() {
         {samplePosts.map((post) => (
           <View key={post.id} style={styles.feedItem}>
             <View style={styles.userRow}>
-              <Ionicons name="person-circle" size={28} color="#0077ff" style={{ marginRight: 6 }} />
+              <Ionicons name="person-circle" size={28} color="#000" style={{ marginRight: 6 }} />
               <Text style={styles.username}>{post.username}</Text>
             </View>
             <Image source={{ uri: post.image }} style={styles.postImage} />
@@ -41,7 +40,7 @@ export default function Home() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f0f4f8',
+    backgroundColor: '#D0D4D5',
     paddingTop: 60,
     paddingHorizontal: 20,
   },
@@ -52,9 +51,10 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   heading: {
-    fontSize: 22,
+    fontSize: 26,
     fontWeight: 'bold',
-    color: '#1d3557',
+    fontStyle: 'italic',
+    color: '#000',
   },
   feedItem: {
     backgroundColor: '#fff',
@@ -73,9 +73,10 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   username: {
-    fontWeight: '600',
-    fontSize: 15,
-    color: '#333',
+    fontWeight: 'bold',
+    fontStyle: 'italic',
+    fontSize: 16,
+    color: '#000',
   },
   postImage: {
     width: '100%',
@@ -84,7 +85,9 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   caption: {
-    fontSize: 14,
-    color: '#444',
+    fontSize: 15,
+    fontWeight: 'bold',
+    fontStyle: 'italic',
+    color: '#000',
   },
 });

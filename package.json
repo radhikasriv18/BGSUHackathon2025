@@ -45,7 +45,13 @@
     "react-native-screens": "~4.4.0",
     "react-native-vector-icons": "^10.2.0",
     "react-native-web": "~0.19.13",
+<<<<<<< HEAD
     "react-native-webview": "13.12.5"
+=======
+    "react-native-webview": "13.12.5",
+    "expo-image-picker": "~16.0.6",
+    "expo-document-picker": "~13.0.3"
+>>>>>>> 2b9858169baea7b8a2aae99c132ec3ac108a8c4b
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

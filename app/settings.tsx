@@ -14,18 +14,27 @@ export default function Settings() {
     router.replace('/login');
   };
 
+  const handleBackToHome = () => {
+    router.replace('/(tabs)');// 👈 Navigates back to Home screen in (tabs)
+  };
+
   return (
     <View style={styles.container}>
-      <Text style={styles.heading}>⚙️ Settings</Text>
+      {/* Back to Home Button */}
+      <TouchableOpacity onPress={handleBackToHome} style={styles.backButton}>
+        <Ionicons name="arrow-back" size={24} color="#000" />
+      </TouchableOpacity>
+
+      <Text style={styles.heading}>Settings</Text>
 
       <TouchableOpacity style={styles.option} onPress={handleProfile}>
-        <Ionicons name="person-outline" size={22} color="#333" style={styles.icon} />
+        <Ionicons name="person-outline" size={22} color="#000" style={styles.icon} />
         <Text style={styles.label}>Profile</Text>
       </TouchableOpacity>
 
       <TouchableOpacity style={styles.option} onPress={handleLogout}>
-        <Ionicons name="log-out-outline" size={22} color="#e63946" style={styles.icon} />
-        <Text style={[styles.label, { color: '#e63946' }]}>Logout</Text>
+        <Ionicons name="log-out-outline" size={22} color="#000" style={styles.icon} />
+        <Text style={styles.label}>Logout</Text>
       </TouchableOpacity>
     </View>
   );
@@ -34,14 +43,18 @@ export default function Settings() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 80,
+    paddingTop: 60,
     paddingHorizontal: 24,
-    backgroundColor: '#f0f4f8',
+    backgroundColor: '#D0D4D5',
+  },
+  backButton: {
+    marginBottom: 20,
   },
   heading: {
     fontSize: 26,
     fontWeight: 'bold',
-    color: '#1d3557',
+    fontStyle: 'italic',
+    color: '#000',
     marginBottom: 30,
   },
   option: {
@@ -49,13 +62,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 14,
     borderBottomWidth: 1,
-    borderBottomColor: '#ddd',
+    borderBottomColor: '#aaa',
   },
   icon: {
     marginRight: 12,
   },
   label: {
     fontSize: 16,
-    color: '#333',
+    fontWeight: 'bold',
+    fontStyle: 'italic',
+    color: '#000',
   },
 });
