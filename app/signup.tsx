@@ -1,15 +1,16 @@
-// 📄 signup.tsx (Styled Version)
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useState } from 'react';
 import { useRouter } from 'expo-router';
+import { useUser } from './contexts/userContext'; // Make sure this path is correct
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d).{6,}$/;
 
 export default function Signup() {
   const router = useRouter();
+  const { setUser } = useUser(); // Access setUser from global context
 
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
@@ -55,6 +56,7 @@ export default function Signup() {
   const handleSignup = async () => {
     if (!validateInputs()) return;
     setLoading(true);
+
     try {
       const response = await fetch('http://127.0.0.1:8000/signup', {
         method: 'POST',
@@ -68,7 +70,9 @@ export default function Signup() {
           phone: phone || null,
         }),
       });
+
       const data = await response.json();
+
       if (response.ok) {
         const { access_token, user_id, success } = data;
       
@@ -82,7 +86,6 @@ export default function Signup() {
         } else {
           setErrorMessage('Signup failed. Missing token.');
         }
-      }
       
     } catch (error) {
       console.error('Signup error:', error);

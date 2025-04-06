@@ -1,10 +1,12 @@
 import { StyleSheet, Text, View, ScrollView, Button, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useUser } from '../contexts/userContext';
 
 export default function ChallengesScreen() {
+    const { user } = useUser();
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.greeting}>Hi Radhika</Text>
+      <Text style={styles.greeting}>Hi {user?.name || 'User'}</Text>
 
       {/* Streak Section */}
       <View style={styles.streakContainer}>
