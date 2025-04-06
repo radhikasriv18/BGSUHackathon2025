@@ -36,7 +36,7 @@ export default function ChallengesScreen() {
 
         const data = await res.json();
         if (res.ok) {
-          setChallenges(data); // ✅ expected to be an array
+          setChallenges(data);
         } else {
           console.error('Fetch failed:', data);
         }
@@ -60,7 +60,7 @@ export default function ChallengesScreen() {
 
   return (
     <View style={styles.container}>
-      {/* Header Row with Button */}
+      {/* Header Row */}
       <View style={styles.header}>
         <Text style={styles.heading}>Challenges</Text>
         <TouchableOpacity
@@ -79,17 +79,34 @@ export default function ChallengesScreen() {
         </View>
       ) : (
         <ScrollView contentContainerStyle={styles.list}>
-          {challenges.map((item, index) => (
-            <View key={index} style={styles.card}>
-              <Text style={styles.cardTitle}>{item.title || 'Challenge'}</Text>
-              <Text>{item.description || 'No description provided.'}</Text>
-            </View>
-          ))}
+          {challenges.map((item, index) => {
+            const createdAt = new Date(item.created_at);
+            const expiryDate = new Date(createdAt);
+            expiryDate.setDate(expiryDate.getDate() + 1);
+
+            return (
+              <View key={index} style={styles.card}>
+                {/* Header: friend vs creator */}
+                <Text style={styles.cardHeader}>
+                  {item.friend_name} vs {item.creator_name}
+                </Text>
+
+                {/* Challenge Box */}
+                <View style={styles.challengeBox}>
+                  <Text style={styles.challengeName}>{item.challenge_name}</Text>
+                  <Text style={styles.expiryText}>
+                    Expires on: {expiryDate.toDateString()}
+                  </Text>
+                </View>
+              </View>
+            );
+          })}
         </ScrollView>
       )}
     </View>
   );
 }
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -152,9 +169,28 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     elevation: 2,
   },
-  cardTitle: {
+  cardHeader: {
     fontSize: 16,
-    fontWeight: '600',
-    marginBottom: 6,
+    fontWeight: 'bold',
+    color: '#000',
+    marginBottom: 10,
+    fontStyle: 'italic',
+  },
+  challengeBox: {
+    backgroundColor: '#f1f1f1',
+    padding: 12,
+    borderRadius: 10,
+    borderLeftWidth: 4,
+    borderLeftColor: '#333',
+  },
+  challengeName: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 4,
+  },
+  expiryText: {
+    fontSize: 14,
+    color: '#666',
+    fontStyle: 'italic',
   },
 });
