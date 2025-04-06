@@ -1,11 +1,10 @@
-// 📄 verify.tsx (Styled Version)
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useState } from 'react';
-import { useRouter, useLocalSearchParams } from 'expo-router';
+import { useRouter } from 'expo-router';
 
 export default function Verify() {
   const router = useRouter();
-  const { email } = useLocalSearchParams();
   const [otp, setOtp] = useState(['', '', '', '']);
   const [loading, setLoading] = useState(false);
 
@@ -21,21 +20,32 @@ export default function Verify() {
       Alert.alert('Invalid OTP', 'Please enter the full 4-digit code.');
       return;
     }
+
+    const token = await AsyncStorage.getItem('access_token');
+    if (!token) {
+      Alert.alert('Error', 'No token found. Please log in again.');
+      return;
+    }
+
     setLoading(true);
     try {
       const res = await fetch('http://127.0.0.1:8000/otp', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, otp: code }),
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`, // ✅ Include the token here
+        },
+        body: JSON.stringify({ otp: code }),
       });
+
       const data = await res.json();
-      if (res.ok && data.status === 'verified') {
+      if (res.ok && data.success) {
         router.replace('/onboarding');
       } else {
         Alert.alert('OTP Failed', data.message || 'Invalid OTP');
       }
     } catch (error) {
-      console.error(error);
+      console.error('OTP verification error:', error);
       Alert.alert('Error', 'Something went wrong. Please try again.');
     } finally {
       setLoading(false);

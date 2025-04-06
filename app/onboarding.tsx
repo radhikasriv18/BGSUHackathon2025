@@ -1,5 +1,6 @@
-// 📄 onboarding.tsx (Styled Version)
-import { View, Text, TextInput, StyleSheet, Button, TouchableOpacity, ScrollView } from 'react-native';
+// 📄 onboarding.tsx (Styled & Updated to Send Data)
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, ScrollView, Alert, ActivityIndicator } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useState } from 'react';
 import { useRouter } from 'expo-router';
 
@@ -12,18 +13,46 @@ export default function Onboarding() {
   const [weight, setWeight] = useState('');
   const [smoking, setSmoking] = useState('');
   const [alcohol, setAlcohol] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!dob || !gender || !height || !weight || !smoking || !alcohol) {
-      alert('Please fill in all fields');
+      Alert.alert('Missing Info', 'Please fill in all fields');
+      return;
+    }
+
+    const token = await AsyncStorage.getItem('access_token');
+    if (!token) {
+      Alert.alert('Error', 'Authentication error. Please log in again.');
       return;
     }
 
     const userData = { dob, gender, height, weight, smoking, alcohol };
-    console.log('User Onboarding Info:', userData);
 
-    // TODO: Send this to backend
-    router.replace('/(tabs)');
+    try {
+      setLoading(true);
+      const response = await fetch('http://127.0.0.1:8000/onboarding', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`, // ✅ include token
+        },
+        body: JSON.stringify(userData),
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        router.replace('/(tabs)');
+      } else {
+        Alert.alert('Failed', data.message || 'Could not save onboarding info');
+      }
+    } catch (error) {
+      console.error('Onboarding Error:', error);
+      Alert.alert('Error', 'Something went wrong. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const SelectButton = ({ label, value, setter }) => (
@@ -83,8 +112,8 @@ export default function Onboarding() {
         <SelectButton label="No" value={alcohol} setter={setAlcohol} />
       </View>
 
-      <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-        <Text style={styles.buttonText}>Continue</Text>
+      <TouchableOpacity style={styles.button} onPress={handleSubmit} disabled={loading}>
+        {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.buttonText}>Continue</Text>}
       </TouchableOpacity>
     </ScrollView>
   );

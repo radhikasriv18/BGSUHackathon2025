@@ -1,4 +1,5 @@
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useState } from 'react';
 import { useRouter } from 'expo-router';
@@ -73,20 +74,19 @@ export default function Signup() {
       const data = await response.json();
 
       if (response.ok) {
-        
-        // ✅ Save user globally
-        setUser({
-          name: firstName,
-          email: email,
-          username: username,
-        });
-
-        // ✅ Navigate to OTP verification
-        router.replace('/verify');
-        router.replace({ pathname: '/verify' });
-      } else {
-        setErrorMessage(data.message || 'Signup failed. Try again.');
-      }
+        const { access_token, user_id, success } = data;
+      
+        if (success && access_token) {
+          await AsyncStorage.setItem('access_token', access_token);
+          console.log(success);
+          console.log(access_token);
+          // await AsyncStorage.setItem('user_id', String(user_id)); 
+      
+          router.replace({ pathname: '/verify' }); 
+        } else {
+          setErrorMessage('Signup failed. Missing token.');
+        }
+      
     } catch (error) {
       console.error('Signup error:', error);
       setErrorMessage('Something went wrong. Please try again.');
