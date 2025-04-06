@@ -26,16 +26,18 @@ export default function Verify() {
       Alert.alert('Error', 'No token found. Please log in again.');
       return;
     }
-
+    console.log(token)
+    console.log(code)
     setLoading(true);
     try {
       const res = await fetch('http://127.0.0.1:8000/otp', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`, // ✅ Include the token here
-        },
-        body: JSON.stringify({ otp: code }),
+        // headers: {
+        //   'Content-Type': 'application/json',
+        //   Authorization: `Bearer ${token}`, // ✅ Include the token here
+        // },
+        
+        body: JSON.stringify({ entered_otp: code, access_token: token}),
       });
 
       const data = await res.json();

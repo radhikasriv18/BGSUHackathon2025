@@ -30,7 +30,8 @@ export default function Login() {
         body: JSON.stringify({ identifier: usernameOrEmail, password }),
       });
       const data = await response.json();
-      if (response.ok && data.token) {
+      console.log(data)
+      if (response.ok ) {
         await AsyncStorage.setItem('authToken', data.token);
         router.replace('/(tabs)');
       } else {
