@@ -25,7 +25,7 @@ export default function CreatePostScreen() {
 
       const result = await response.json();
       if (response.ok) {
-        Alert.alert('Post submitted!');
+        alert('Post submitted!');
         setCaption('');
       } else {
         Alert.alert('Failed to upload post', JSON.stringify(result));

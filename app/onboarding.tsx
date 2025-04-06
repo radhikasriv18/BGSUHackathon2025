@@ -33,10 +33,6 @@ export default function Onboarding() {
       return;
     }
 
-<<<<<<< HEAD
-    const userData = { dob, gender, height, weight, smoking, alcohol };
-    console.log(userData)
-=======
     const userData = {
       access_token: token,
       dob,
@@ -47,7 +43,6 @@ export default function Onboarding() {
       alcohol,
     };
 
->>>>>>> 2b9858169baea7b8a2aae99c132ec3ac108a8c4b
     try {
       setLoading(true);
       const response = await fetch('http://127.0.0.1:8000/onboarding', {
