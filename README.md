@@ -2,7 +2,7 @@
 
 ## Project Name: FitLinked
 
-## Video Link: https://drive.google.com/file/d/12IBnfeR4MfEMTw1yBF2-NrfbX1cyoXOR/view?usp=sharing
+### Video Link: https://drive.google.com/file/d/12IBnfeR4MfEMTw1yBF2-NrfbX1cyoXOR/view?usp=sharing
 
 # 🩺 Health & Wellness App
 
