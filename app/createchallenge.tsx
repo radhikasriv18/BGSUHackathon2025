@@ -1,42 +1,110 @@
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import {
+  View,
+  Text,
+  TextInput,
+  StyleSheet,
+  TouchableOpacity,
+  Alert,
+} from 'react-native';
 import { useState } from 'react';
 import { useRouter } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function CreateChallengeScreen() {
-  const [challengeName, setChallengeName] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('');
+  const [customChallenge, setCustomChallenge] = useState('');
   const [description, setDescription] = useState('');
   const [friendEmail, setFriendEmail] = useState('');
   const router = useRouter();
 
-  const handleInvite = () => {
+  const categories = [
+    'Morning Walk',
+    'No Sugar',
+    'Drink 2L Water',
+    '10 Min Meditation',
+    'Custom',
+  ];
+
+  const handleInvite = async () => {
+    const challengeName =
+      selectedCategory === 'Custom' ? customChallenge : selectedCategory;
+
     if (!challengeName || !description || !friendEmail) {
       Alert.alert('Please fill out all fields.');
       return;
     }
 
-    console.log('Challenge Created:', {
-      challengeName,
-      description,
-      invitedEmail: friendEmail,
-    });
+    const access_token = await AsyncStorage.getItem('access_token');
+    if (!access_token) {
+      Alert.alert('Error', 'Please log in again.');
+      return;
+    }
 
-    router.push('/challenge-progress');
+    const payload = {
+      access_token,
+      challenge_name: challengeName,
+      description,
+      user_invitation: friendEmail,
+    };
+
+    try {
+      const res = await fetch('http://127.0.0.1:8000/createchallenges', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        Alert.alert('Challenge sent successfully!');
+        router.push('/challenges');
+      } else {
+        Alert.alert('Error', data?.message || 'Could not send challenge.');
+      }
+    } catch (err) {
+      console.error('API error:', err);
+      Alert.alert('Something went wrong. Try again.');
+    }
   };
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Create New Challenge</Text>
 
-      <Text style={styles.label}>Challenge Name</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="e.g., Morning Walk"
-        placeholderTextColor="#555"
-        value={challengeName}
-        onChangeText={setChallengeName}
-      />
+      <Text style={styles.label}>Choose a Category</Text>
+      <View style={styles.categoryWrap}>
+        {categories.map((item) => (
+          <TouchableOpacity
+            key={item}
+            style={[
+              styles.categoryBox,
+              selectedCategory === item && styles.selectedBox,
+            ]}
+            onPress={() => setSelectedCategory(item)}
+          >
+            <Text
+              style={[
+                styles.categoryText,
+                selectedCategory === item && styles.selectedText,
+              ]}
+            >
+              {item}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </View>
 
-      <Text style={styles.label}>Description of the challenge</Text>
+      {selectedCategory === 'Custom' && (
+        <TextInput
+          style={styles.input}
+          placeholder="Enter your own challenge name"
+          placeholderTextColor="#555"
+          value={customChallenge}
+          onChangeText={setCustomChallenge}
+        />
+      )}
+
+      <Text style={styles.label}>Description</Text>
       <TextInput
         style={[styles.input, styles.textArea]}
         placeholder="What will this challenge include?"
@@ -46,10 +114,10 @@ export default function CreateChallengeScreen() {
         multiline
       />
 
-      <Text style={styles.label}>Invite Friend (email)</Text>
+      <Text style={styles.label}>Invite Friend (Email)</Text>
       <TextInput
         style={styles.input}
-        placeholder="enter email address"
+        placeholder="friend@example.com"
         keyboardType="email-address"
         autoCapitalize="none"
         placeholderTextColor="#555"
@@ -71,20 +139,44 @@ const styles = StyleSheet.create({
     padding: 24,
   },
   title: {
-    fontSize: 46,
+    fontSize: 42,
     fontWeight: 'bold',
     fontStyle: 'italic',
-    marginBottom: 24,
     textAlign: 'center',
     color: '#000',
+    marginBottom: 20,
   },
   label: {
     fontWeight: 'bold',
     fontStyle: 'italic',
-    marginBottom: 6,
-    marginTop: 14,
     fontSize: 16,
+    marginBottom: 6,
     color: '#000',
+  },
+  categoryWrap: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 10,
+    marginBottom: 16,
+  },
+  categoryBox: {
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    backgroundColor: '#E7E9EA',
+    borderRadius: 10,
+    borderWidth: 1.5,
+    borderColor: '#000',
+  },
+  selectedBox: {
+    backgroundColor: '#000',
+  },
+  categoryText: {
+    color: '#000',
+    fontWeight: '600',
+    fontStyle: 'italic',
+  },
+  selectedText: {
+    color: '#fff',
   },
   input: {
     backgroundColor: '#E7E9EA',
@@ -94,24 +186,21 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     paddingVertical: 12,
     fontSize: 16,
-    color: '#000',
     fontWeight: 'bold',
     fontStyle: 'italic',
+    marginBottom: 14,
+    color: '#000',
   },
   textArea: {
     height: 100,
     textAlignVertical: 'top',
   },
   button: {
-    marginTop: 28,
+    marginTop: 20,
     backgroundColor: '#333333',
     borderRadius: 10,
     paddingVertical: 16,
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.15,
-    shadowRadius: 3,
     elevation: 3,
   },
   buttonText: {
