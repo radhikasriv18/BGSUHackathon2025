@@ -5,44 +5,44 @@ import {
   StyleSheet,
   TouchableOpacity,
   Alert,
+  ScrollView,
 } from 'react-native';
 import { useState } from 'react';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+const categories = [
+  'Morning Walk',
+  'Daily Steps',
+  'Healthy Meal',
+  'Workout',
+  'Meditation',
+  'No Sugar',
+  'Drink 2L Water',
+  'Custom',
+];
+
 export default function CreateChallengeScreen() {
   const [selectedCategory, setSelectedCategory] = useState('');
-  const [customChallenge, setCustomChallenge] = useState('');
   const [description, setDescription] = useState('');
   const [friendEmail, setFriendEmail] = useState('');
   const router = useRouter();
 
-  const categories = [
-    'Morning Walk',
-    'No Sugar',
-    'Drink 2L Water',
-    '10 Min Meditation',
-    'Custom',
-  ];
-
-  const handleInvite = async () => {
-    const challengeName =
-      selectedCategory === 'Custom' ? customChallenge : selectedCategory;
-
-    if (!challengeName || !description || !friendEmail) {
+  const handleCreateChallenge = async () => {
+    if (!selectedCategory || !description || !friendEmail) {
       Alert.alert('Please fill out all fields.');
       return;
     }
 
-    const access_token = await AsyncStorage.getItem('access_token');
-    if (!access_token) {
-      Alert.alert('Error', 'Please log in again.');
+    const token = await AsyncStorage.getItem('access_token');
+    if (!token) {
+      Alert.alert('Authentication error. Please log in again.');
       return;
     }
 
     const payload = {
-      access_token,
-      challenge_name: challengeName,
+      access_token: token,
+      challenge_name: selectedCategory,
       description,
       user_invitation: friendEmail,
     };
@@ -50,59 +50,51 @@ export default function CreateChallengeScreen() {
     try {
       const res = await fetch('http://127.0.0.1:8000/createchallenges', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify(payload),
       });
 
       const data = await res.json();
       if (res.ok) {
-        Alert.alert('Challenge sent successfully!');
-        router.push('/challenges');
+        Alert.alert('Challenge created!');
+        router.replace('/challenges'); // or route to confirmation
       } else {
-        Alert.alert('Error', data?.message || 'Could not send challenge.');
+        Alert.alert('Failed to create challenge', data.message || 'Try again.');
       }
     } catch (err) {
-      console.error('API error:', err);
-      Alert.alert('Something went wrong. Try again.');
+      console.error('Create challenge error:', err);
+      Alert.alert('Something went wrong. Check console for details.');
     }
   };
 
   return (
-    <View style={styles.container}>
+    <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.title}>Create New Challenge</Text>
 
-      <Text style={styles.label}>Choose a Category</Text>
-      <View style={styles.categoryWrap}>
-        {categories.map((item) => (
+      <Text style={styles.label}>Choose a category</Text>
+      <View style={styles.categoriesContainer}>
+        {categories.map((cat) => (
           <TouchableOpacity
-            key={item}
+            key={cat}
             style={[
               styles.categoryBox,
-              selectedCategory === item && styles.selectedBox,
+              selectedCategory === cat && styles.selectedCategoryBox,
             ]}
-            onPress={() => setSelectedCategory(item)}
+            onPress={() => setSelectedCategory(cat)}
           >
             <Text
               style={[
                 styles.categoryText,
-                selectedCategory === item && styles.selectedText,
+                selectedCategory === cat && styles.selectedCategoryText,
               ]}
             >
-              {item}
+              {cat}
             </Text>
           </TouchableOpacity>
         ))}
       </View>
-
-      {selectedCategory === 'Custom' && (
-        <TextInput
-          style={styles.input}
-          placeholder="Enter your own challenge name"
-          placeholderTextColor="#555"
-          value={customChallenge}
-          onChangeText={setCustomChallenge}
-        />
-      )}
 
       <Text style={styles.label}>Description</Text>
       <TextInput
@@ -114,10 +106,10 @@ export default function CreateChallengeScreen() {
         multiline
       />
 
-      <Text style={styles.label}>Invite Friend (Email)</Text>
+      <Text style={styles.label}>Invite Friend (email)</Text>
       <TextInput
         style={styles.input}
-        placeholder="friend@example.com"
+        placeholder="Enter email address"
         keyboardType="email-address"
         autoCapitalize="none"
         placeholderTextColor="#555"
@@ -125,21 +117,21 @@ export default function CreateChallengeScreen() {
         onChangeText={setFriendEmail}
       />
 
-      <TouchableOpacity style={styles.button} onPress={handleInvite}>
+      <TouchableOpacity style={styles.button} onPress={handleCreateChallenge}>
         <Text style={styles.buttonText}>Invite Friend</Text>
       </TouchableOpacity>
-    </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: '#D0D4D5',
     padding: 24,
+    backgroundColor: '#D0D4D5',
+    flexGrow: 1,
   },
   title: {
-    fontSize: 42,
+    fontSize: 36,
     fontWeight: 'bold',
     fontStyle: 'italic',
     textAlign: 'center',
@@ -147,36 +139,11 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   label: {
+    fontSize: 16,
     fontWeight: 'bold',
     fontStyle: 'italic',
-    fontSize: 16,
-    marginBottom: 6,
+    marginBottom: 8,
     color: '#000',
-  },
-  categoryWrap: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 10,
-    marginBottom: 16,
-  },
-  categoryBox: {
-    paddingVertical: 10,
-    paddingHorizontal: 16,
-    backgroundColor: '#E7E9EA',
-    borderRadius: 10,
-    borderWidth: 1.5,
-    borderColor: '#000',
-  },
-  selectedBox: {
-    backgroundColor: '#000',
-  },
-  categoryText: {
-    color: '#000',
-    fontWeight: '600',
-    fontStyle: 'italic',
-  },
-  selectedText: {
-    color: '#fff',
   },
   input: {
     backgroundColor: '#E7E9EA',
@@ -188,15 +155,41 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     fontStyle: 'italic',
-    marginBottom: 14,
     color: '#000',
+    marginBottom: 16,
   },
   textArea: {
     height: 100,
     textAlignVertical: 'top',
   },
+  categoriesContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 12,
+    marginBottom: 20,
+  },
+  categoryBox: {
+    backgroundColor: '#fff',
+    borderColor: '#000',
+    borderWidth: 1,
+    borderRadius: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 14,
+  },
+  selectedCategoryBox: {
+    backgroundColor: '#333',
+  },
+  categoryText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#000',
+    fontStyle: 'italic',
+  },
+  selectedCategoryText: {
+    color: '#fff',
+  },
   button: {
-    marginTop: 20,
+    marginTop: 12,
     backgroundColor: '#333333',
     borderRadius: 10,
     paddingVertical: 16,
