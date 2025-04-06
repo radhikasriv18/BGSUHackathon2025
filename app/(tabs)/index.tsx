@@ -1,15 +1,33 @@
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ScrollView,
+  ActivityIndicator,
+} from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 
-const samplePosts = [
-  { id: 1, username: '@ananya', caption: 'Day 5! Crushed my squats 💪' },
-  { id: 2, username: '@rahul', caption: 'Mindfulness challenge ✅' },
-  { id: 3, username: '@sita', caption: 'Healthy lunch with quinoa 🥗' },
-];
-
 export default function Home() {
+  const [posts, setPosts] = useState([]);
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
+
+  useEffect(() => {
+    fetch('http://127.0.0.1:8000/home') // Use 10.0.2.2 for Android emulator
+      .then((res) => res.json())
+      .then((data) => {
+        console.log('Fetched data:', data);
+        setPosts(data);
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error('Error fetching posts:', error);
+        setLoading(false);
+      });
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -21,17 +39,28 @@ export default function Home() {
         </TouchableOpacity>
       </View>
 
-      <ScrollView showsVerticalScrollIndicator={false}>
-        {samplePosts.map((post) => (
-          <View key={post.id} style={styles.feedItem}>
-            <View style={styles.userRow}>
-              <Ionicons name="person-circle-outline" size={26} color="#333" />
-              <Text style={styles.username}>{post.username}</Text>
+      {loading ? (
+        <ActivityIndicator size="large" color="#000" />
+      ) : (
+        <ScrollView showsVerticalScrollIndicator={false}>
+          {posts.map((post, index) => (
+            <View key={post.id || index} style={styles.feedItem}>
+              <View style={styles.userRow}>
+                <Ionicons
+                  name="person-circle-outline"
+                  size={26}
+                  color="#333"
+                />
+                <Text style={styles.username}>@{post.username}</Text>
+              </View>
+              <Text style={styles.caption}>{post.caption}</Text>
+              <Text style={styles.timestamp}>
+                {new Date(post.created_at).toLocaleString()}
+              </Text>
             </View>
-            <Text style={styles.caption}>{post.caption}</Text>
-          </View>
-        ))}
-      </ScrollView>
+          ))}
+        </ScrollView>
+      )}
     </View>
   );
 }
@@ -83,5 +112,11 @@ const styles = StyleSheet.create({
     color: '#1a1a1a',
     fontStyle: 'italic',
     lineHeight: 22,
+    marginBottom: 4,
+  },
+  timestamp: {
+    fontSize: 12,
+    color: '#666',
+    fontStyle: 'italic',
   },
 });
