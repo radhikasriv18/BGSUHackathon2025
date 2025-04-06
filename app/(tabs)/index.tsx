@@ -1,78 +1,85 @@
+// 📄 Home.tsx (Settings icon inside content, top-right position manually styled)
 import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+
+const samplePosts = [
+  { id: 1, username: '@ananya', image: 'https://via.placeholder.com/300', caption: 'Day 5! Crushed my squats 💪' },
+  { id: 2, username: '@rahul', image: 'https://via.placeholder.com/300/aaa', caption: 'Mindfulness challenge ✅' },
+  { id: 3, username: '@sita', image: 'https://via.placeholder.com/300/888', caption: 'Healthy lunch with quinoa 🥗' },
+];
 
 export default function Home() {
   const router = useRouter();
 
   return (
     <View style={styles.container}>
-      {/* Top Bar */}
+      {/* Top Bar with Title + Settings Button */}
       <View style={styles.topBar}>
-        <Image source={require('@/assets/images/fitnesslogo.png')} style={styles.logo} />
+        <Text style={styles.heading}>🌟 Community Feed</Text>
         <TouchableOpacity onPress={() => router.push('/settings')}>
-          <Ionicons name="settings-outline" size={24} color="black" />
+          <Ionicons name="settings-outline" size={26} color="#333" />
         </TouchableOpacity>
       </View>
 
-      <Text style={styles.heading}>Community Feed</Text>
-
-      <ScrollView>
-        {/* Sample Feed Post */}
-        <View style={styles.feedItem}>
-          <Text style={styles.username}>@ananya</Text>
-          <Image
-            source={{ uri: 'https://via.placeholder.com/300' }}
-            style={styles.postImage}
-          />
-          <Text style={styles.caption}>Day 5! Crushed my squats 💪</Text>
-        </View>
-
-        {/* Duplicate or loop real posts here */}
-        <View style={styles.feedItem}>
-          <Text style={styles.username}>@rahul</Text>
-          <Image
-            source={{ uri: 'https://via.placeholder.com/300/aaa' }}
-            style={styles.postImage}
-          />
-          <Text style={styles.caption}>Mindfulness challenge ✅</Text>
-        </View>
+      <ScrollView showsVerticalScrollIndicator={false}>
+        {samplePosts.map((post) => (
+          <View key={post.id} style={styles.feedItem}>
+            <View style={styles.userRow}>
+              <Ionicons name="person-circle" size={28} color="#0077ff" style={{ marginRight: 6 }} />
+              <Text style={styles.username}>{post.username}</Text>
+            </View>
+            <Image source={{ uri: post.image }} style={styles.postImage} />
+            <Text style={styles.caption}>{post.caption}</Text>
+          </View>
+        ))}
       </ScrollView>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fff', paddingTop: 60, paddingHorizontal: 20 },
+  container: {
+    flex: 1,
+    backgroundColor: '#f0f4f8',
+    paddingTop: 60,
+    paddingHorizontal: 20,
+  },
   topBar: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 20,
-  },
-  logo: {
-    width: 120,
-    height: 30,
-    resizeMode: 'contain',
+    marginBottom: 15,
   },
   heading: {
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: 'bold',
-    marginBottom: 10,
+    color: '#1d3557',
   },
   feedItem: {
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#fff',
     padding: 15,
-    borderRadius: 10,
-    marginBottom: 20,
+    borderRadius: 12,
+    marginBottom: 18,
+    shadowColor: '#000',
+    shadowOpacity: 0.05,
+    shadowRadius: 5,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 2,
+  },
+  userRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
   },
   username: {
     fontWeight: '600',
-    marginBottom: 10,
+    fontSize: 15,
+    color: '#333',
   },
   postImage: {
     width: '100%',
-    height: 200,
+    height: 220,
     borderRadius: 10,
     marginBottom: 10,
   },
