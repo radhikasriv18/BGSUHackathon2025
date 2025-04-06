@@ -1,5 +1,5 @@
-// 📄 onboarding.tsx (Styled Version)
-import { View, Text, TextInput, StyleSheet, Button, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, ScrollView, Alert, ActivityIndicator } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useState } from 'react';
 import { useRouter } from 'expo-router';
 
@@ -12,31 +12,75 @@ export default function Onboarding() {
   const [weight, setWeight] = useState('');
   const [smoking, setSmoking] = useState('');
   const [alcohol, setAlcohol] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!dob || !gender || !height || !weight || !smoking || !alcohol) {
-      alert('Please fill in all fields');
+      Alert.alert('Missing Info', 'Please fill in all fields');
       return;
     }
 
-    const userData = { dob, gender, height, weight, smoking, alcohol };
-    console.log('User Onboarding Info:', userData);
+    const token = await AsyncStorage.getItem('access_token');
+    if (!token) {
+      Alert.alert('Error', 'Authentication error. Please log in again.');
+      return;
+    }
 
-    // TODO: Send this to backend
-    router.replace('/(tabs)');
+    const heightInt = parseInt(height);
+    const weightInt = parseInt(weight);
+    if (isNaN(heightInt) || isNaN(weightInt)) {
+      Alert.alert('Invalid Data', 'Height and weight must be numbers.');
+      return;
+    }
+
+    const userData = {
+      access_token: token,
+      dob,
+      gender,
+      height: heightInt,
+      weight: weightInt,
+      smoking,
+      alcohol,
+    };
+
+    try {
+      setLoading(true);
+      const response = await fetch('http://127.0.0.1:8000/onboarding', {
+        method: 'POST',
+        // headers: {
+        //   'Content-Type': 'application/json',
+        //   Authorization: Bearer ${token}, // ✅ include token
+        // },
+        body: JSON.stringify(userData),
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        router.replace('/(tabs)');
+      } else {
+        Alert.alert('Failed', data.message || 'Could not save onboarding info');
+      }
+    } catch (error) {
+      console.error('Onboarding Error:', error);
+      Alert.alert('Error', 'Something went wrong. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const SelectButton = ({ label, value, setter }) => (
     <TouchableOpacity
       style={[styles.option, value === label && styles.optionSelected]}
-      onPress={() => setter(label)}>
-      <Text style={{ color: value === label ? '#fff' : '#333' }}>{label}</Text>
+      onPress={() => setter(label)}
+    >
+      <Text style={[styles.optionText, value === label && styles.optionTextSelected]}>{label}</Text>
     </TouchableOpacity>
   );
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>Let's Get to Know You 🎯</Text>
+      <Text style={styles.title}>Let's Get to Know You</Text>
 
       <Text style={styles.label}>Date of Birth (YYYY-MM-DD)</Text>
       <TextInput
@@ -44,6 +88,7 @@ export default function Onboarding() {
         placeholder="1995-06-15"
         value={dob}
         onChangeText={setDob}
+        placeholderTextColor="#555"
       />
 
       <Text style={styles.label}>Gender</Text>
@@ -59,6 +104,7 @@ export default function Onboarding() {
         keyboardType="numeric"
         onChangeText={setHeight}
         value={height}
+        placeholderTextColor="#555"
       />
 
       <Text style={styles.label}>Weight (kg)</Text>
@@ -67,6 +113,7 @@ export default function Onboarding() {
         keyboardType="numeric"
         onChangeText={setWeight}
         value={weight}
+        placeholderTextColor="#555"
       />
 
       <Text style={styles.label}>Do you smoke?</Text>
@@ -83,8 +130,8 @@ export default function Onboarding() {
         <SelectButton label="No" value={alcohol} setter={setAlcohol} />
       </View>
 
-      <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-        <Text style={styles.buttonText}>Continue</Text>
+      <TouchableOpacity style={styles.button} onPress={handleSubmit} disabled={loading}>
+        {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.buttonText}>Continue</Text>}
       </TouchableOpacity>
     </ScrollView>
   );
@@ -93,29 +140,36 @@ export default function Onboarding() {
 const styles = StyleSheet.create({
   container: {
     padding: 24,
-    backgroundColor: '#f0f4f8',
+    backgroundColor: '#D0D4D5',
   },
   title: {
-    fontSize: 26,
+    fontSize: 28,
     fontWeight: 'bold',
+    fontStyle: 'italic',
     textAlign: 'center',
     marginBottom: 20,
-    color: '#1d3557',
+    color: '#000',
   },
   label: {
-    fontWeight: '600',
+    fontWeight: 'bold',
+    fontStyle: 'italic',
     marginTop: 15,
     marginBottom: 5,
-    color: '#333',
+    color: '#000',
+    fontSize: 16,
   },
   input: {
-    backgroundColor: '#fff',
-    borderWidth: 1,
-    borderColor: '#ccc',
+    backgroundColor: '#E7E9EA',
+    borderWidth: 1.5,
+    borderColor: '#000',
     borderRadius: 10,
     paddingHorizontal: 16,
-    paddingVertical: 10,
+    paddingVertical: 12,
     marginBottom: 10,
+    fontWeight: 'bold',
+    fontStyle: 'italic',
+    color: '#000',
+    fontSize: 16,
   },
   row: {
     flexDirection: 'row',
@@ -126,24 +180,40 @@ const styles = StyleSheet.create({
   option: {
     paddingVertical: 10,
     paddingHorizontal: 16,
-    backgroundColor: '#e6e6e6',
+    backgroundColor: '#E7E9EA',
     borderRadius: 10,
     marginRight: 8,
     marginBottom: 8,
+    borderWidth: 1.5,
+    borderColor: '#000',
   },
   optionSelected: {
-    backgroundColor: '#0077ff',
+    backgroundColor: '#333333',
+  },
+  optionText: {
+    color: '#000',
+    fontWeight: 'bold',
+    fontStyle: 'italic',
+  },
+  optionTextSelected: {
+    color: '#fff',
   },
   button: {
-    backgroundColor: '#0077ff',
-    borderRadius: 10,
-    paddingVertical: 14,
+    backgroundColor: '#333333',
+    borderRadius: 12,
+    paddingVertical: 16,
     alignItems: 'center',
     marginTop: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+    elevation: 4,
   },
   buttonText: {
     color: '#fff',
-    fontSize: 16,
-    fontWeight: '600',
+    fontSize: 18,
+    fontWeight: 'bold',
+    fontStyle: 'italic',
   },
 });
