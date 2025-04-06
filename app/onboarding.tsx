@@ -26,17 +26,17 @@ export default function Onboarding() {
       Alert.alert('Error', 'Authentication error. Please log in again.');
       return;
     }
-
+    console.log(token)
     const userData = { dob, gender, height, weight, smoking, alcohol };
-
+    console.log(userData)
     try {
       setLoading(true);
       const response = await fetch('http://127.0.0.1:8000/onboarding', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`, // ✅ include token
-        },
+        // headers: {
+        //   'Content-Type': 'application/json',
+        //   Authorization: `Bearer ${token}`, // ✅ include token
+        // },
         body: JSON.stringify(userData),
       });
 

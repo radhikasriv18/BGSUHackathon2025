@@ -86,7 +86,7 @@ export default function Signup() {
         } else {
           setErrorMessage('Signup failed. Missing token.');
         }
-      
+      }
     } catch (error) {
       console.error('Signup error:', error);
       setErrorMessage('Something went wrong. Please try again.');
