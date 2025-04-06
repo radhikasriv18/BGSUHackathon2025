@@ -55,7 +55,7 @@ export default function Signup() {
     if (!validateInputs()) return;
     setLoading(true);
     try {
-      const response = await fetch('https://your-backend.com/api/signup/', {
+      const response = await fetch('http://127.0.0.1:8000/signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -69,7 +69,7 @@ export default function Signup() {
       });
       const data = await response.json();
       if (response.ok) {
-        // router.replace({ pathname: '/verifyotp', params: { email } });
+        router.replace({ pathname: '/verify' });
       } else {
         setErrorMessage(data.message || 'Signup failed. Try again.');
       }
