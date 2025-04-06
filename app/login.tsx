@@ -30,8 +30,8 @@ export default function Login() {
       });
       const data = await response.json();
       console.log(data)
-      if (response.ok) {
-        await AsyncStorage.setItem('authToken', data.token);
+      if (response.ok ) {
+        await AsyncStorage.setItem('access_token', data.access_token);
         router.replace('/(tabs)');
       } else {
         setErrorMessage(data.message || 'Invalid login credentials.');
