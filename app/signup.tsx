@@ -1,4 +1,5 @@
-import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity } from 'react-native';
+// 📄 signup.tsx (Styled Version)
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useState } from 'react';
 import { useRouter } from 'expo-router';
@@ -17,61 +18,42 @@ export default function Signup() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [phone, setPhone] = useState('');
   const [loading, setLoading] = useState(false);
-
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
   const [errorMessage, setErrorMessage] = useState('');
 
   const validateInputs = () => {
-    if (
-      !firstName ||
-      !lastName ||
-      !username ||
-      !email ||
-      !password ||
-      !confirmPassword
-    ) {
+    if (!firstName || !lastName || !username || !email || !password || !confirmPassword) {
       setErrorMessage('Please fill in all required fields.');
       return false;
     }
-
     if (firstName.length < 2 || lastName.length < 2 || username.length < 3) {
       setErrorMessage('Name and username must be at least 3 characters.');
       return false;
     }
-
     if (!emailRegex.test(email)) {
       setErrorMessage('Please enter a valid email address.');
       return false;
     }
-
     if (!passwordRegex.test(password)) {
-      setErrorMessage(
-        'Password must be at least 6 characters and contain 1 letter & 1 number.'
-      );
+      setErrorMessage('Password must be at least 6 characters and contain 1 letter & 1 number.');
       return false;
     }
-
     if (password !== confirmPassword) {
       setErrorMessage('Passwords do not match.');
       return false;
     }
-
     if (phone && phone.length !== 10) {
       setErrorMessage('Phone number must be 10 digits.');
       return false;
     }
-
     setErrorMessage('');
     return true;
   };
 
   const handleSignup = async () => {
     if (!validateInputs()) return;
-
     setLoading(true);
-
     try {
       const response = await fetch('https://your-backend.com/api/signup/', {
         method: 'POST',
@@ -85,11 +67,8 @@ export default function Signup() {
           phone: phone || null,
         }),
       });
-
       const data = await response.json();
-
       if (response.ok) {
-        // You can show a success message here if you want
         // router.replace({ pathname: '/verifyotp', params: { email } });
       } else {
         setErrorMessage(data.message || 'Signup failed. Try again.');
@@ -104,9 +83,10 @@ export default function Signup() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Sign Up</Text>
+      <Text style={styles.title}>Create Account</Text>
+      <Text style={styles.subtitle}>Join the health community 🚀</Text>
 
-      {errorMessage !== '' && <Text style={styles.errorText}>{errorMessage}</Text>}
+      {errorMessage !== '' && <Text style={styles.error}>{errorMessage}</Text>}
 
       <TextInput style={styles.input} placeholder="First Name" onChangeText={setFirstName} />
       <TextInput style={styles.input} placeholder="Last Name" onChangeText={setLastName} />
@@ -151,47 +131,52 @@ export default function Signup() {
         maxLength={10}
       />
 
-      <Button title={loading ? 'Creating Account...' : 'Create Account'} onPress={handleSignup} disabled={loading} />
+      <TouchableOpacity style={styles.button} onPress={handleSignup} disabled={loading}>
+        {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.buttonText}>Create Account</Text>}
+      </TouchableOpacity>
 
       <Text style={styles.link} onPress={() => router.push('/login')}>
-        Already have an account? Login
+        Already have an account? <Text style={{ fontWeight: '600' }}>Login</Text>
       </Text>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { padding: 20, marginTop: 60 },
-  title: { fontSize: 24, fontWeight: 'bold', marginBottom: 20 },
-  errorText: {
-    color: 'red',
-    marginBottom: 10,
-    textAlign: 'center',
-    fontSize: 14,
-  },
+  container: { flex: 1, padding: 24, backgroundColor: '#f0f4f8', justifyContent: 'center' },
+  title: { fontSize: 28, fontWeight: 'bold', textAlign: 'center', color: '#1d3557' },
+  subtitle: { fontSize: 16, color: '#555', marginBottom: 20, textAlign: 'center' },
+  error: { color: 'red', textAlign: 'center', marginBottom: 10 },
   input: {
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
     borderWidth: 1,
-    padding: 10,
-    marginVertical: 8,
-    borderRadius: 5,
     borderColor: '#ccc',
+    marginBottom: 14,
   },
   passwordContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     borderWidth: 1,
     borderColor: '#ccc',
-    marginVertical: 8,
-    borderRadius: 5,
+    borderRadius: 10,
     paddingHorizontal: 10,
+    marginBottom: 14,
+    backgroundColor: '#fff',
   },
   passwordInput: {
     flex: 1,
     paddingVertical: 10,
   },
-  eye: {
-    fontSize: 18,
-    padding: 5,
+  button: {
+    backgroundColor: '#0077ff',
+    borderRadius: 10,
+    paddingVertical: 14,
+    alignItems: 'center',
+    marginTop: 4,
   },
-  link: { color: 'blue', marginTop: 20, textAlign: 'center' },
+  buttonText: { color: '#fff', fontSize: 16, fontWeight: '600' },
+  link: { color: '#0077cc', marginTop: 20, textAlign: 'center' },
 });
