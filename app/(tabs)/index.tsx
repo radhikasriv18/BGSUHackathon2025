@@ -1,132 +1,87 @@
-import { useEffect, useState } from 'react';
-import {
-  ScrollView,
-  View,
-  Text,
-  StyleSheet,
-  Image,
-  TouchableOpacity,
-  ActivityIndicator,
-} from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 
+const samplePosts = [
+  { id: 1, username: '@ananya', caption: 'Day 5! Crushed my squats 💪' },
+  { id: 2, username: '@rahul', caption: 'Mindfulness challenge ✅' },
+  { id: 3, username: '@sita', caption: 'Healthy lunch with quinoa 🥗' },
+];
+
 export default function Home() {
-  const [posts, setPosts] = useState([]);
-  const [loading, setLoading] = useState(true);
   const router = useRouter();
 
-  useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        const res = await fetch('http://127.0.0.1:8000home');
-        const data = await res.json();
-        setPosts(data.reverse()); // Newest first
-      } catch (err) {
-        console.error('Failed to fetch posts:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchPosts();
-  }, []);
-
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>Community Feed</Text>
+    <View style={styles.container}>
+      {/* Top Bar */}
+      <View style={styles.topBar}>
+        <Text style={styles.heading}>Community Feed</Text>
+        <TouchableOpacity onPress={() => router.push('/settings')}>
+          <Ionicons name="settings-outline" size={26} color="#000" />
+        </TouchableOpacity>
+      </View>
 
-      <TouchableOpacity style={styles.settingsButton} onPress={() => router.push('/settings')}>
-        <Ionicons name="settings-outline" size={24} color="#000" />
-      </TouchableOpacity>
-
-      {loading ? (
-        <ActivityIndicator size="large" color="#000" />
-      ) : (
-        posts.map((post) => (
-          <View key={post.id} style={styles.postCard}>
+      <ScrollView showsVerticalScrollIndicator={false}>
+        {samplePosts.map((post) => (
+          <View key={post.id} style={styles.feedItem}>
             <View style={styles.userRow}>
-              <Ionicons name="person-circle-outline" size={28} color="#000" />
+              <Ionicons name="person-circle-outline" size={26} color="#333" />
               <Text style={styles.username}>{post.username}</Text>
             </View>
-
-            {post.image_url && (
-              <Image
-                source={{ uri: `http://127.0.0.1:8000${post.image_url}` }}
-                style={styles.image}
-              />
-            )}
-
             <Text style={styles.caption}>{post.caption}</Text>
-            <Text style={styles.timestamp}>
-              {new Date(post.created_at).toLocaleString()}
-            </Text>
           </View>
-        ))
-      )}
-    </ScrollView>
+        ))}
+      </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    padding: 24,
-    gap: 16,
-    flexGrow: 1,
+    flex: 1,
     backgroundColor: '#D0D4D5',
+    paddingTop: 60,
+    paddingHorizontal: 20,
   },
-  title: {
+  topBar: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  heading: {
     fontSize: 26,
     fontWeight: 'bold',
     fontStyle: 'italic',
-    textAlign: 'center',
     color: '#000',
-    marginBottom: 10,
   },
-  settingsButton: {
-    position: 'absolute',
-    top: 60,
-    right: 24,
-  },
-  postCard: {
-    backgroundColor: '#E7E9EA',
-    borderRadius: 12,
-    padding: 16,
+  feedItem: {
+    backgroundColor: '#fff',
+    padding: 18,
+    borderRadius: 14,
+    marginBottom: 16,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
+    shadowOpacity: 0.05,
+    shadowRadius: 5,
+    shadowOffset: { width: 0, height: 2 },
     elevation: 2,
   },
   userRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: 10,
+    gap: 6,
   },
   username: {
-    marginLeft: 8,
     fontWeight: 'bold',
     fontStyle: 'italic',
-    fontSize: 16,
-    color: '#000',
-  },
-  image: {
-    width: '100%',
-    height: 200,
-    borderRadius: 10,
-    marginBottom: 10,
-    backgroundColor: '#ccc',
+    fontSize: 15,
+    color: '#333',
   },
   caption: {
-    fontSize: 15,
-    fontWeight: 'bold',
+    fontSize: 16,
+    color: '#1a1a1a',
     fontStyle: 'italic',
-    color: '#000',
-    marginBottom: 6,
-  },
-  timestamp: {
-    fontSize: 12,
-    color: '#333',
-    fontStyle: 'italic',
-    textAlign: 'right',
+    lineHeight: 22,
   },
 });
