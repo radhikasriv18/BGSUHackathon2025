@@ -1,14 +1,15 @@
-// 📄 signup.tsx (Styled Version)
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useState } from 'react';
 import { useRouter } from 'expo-router';
+import { useUser } from './contexts/userContext'; // Make sure this path is correct
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d).{6,}$/;
 
 export default function Signup() {
   const router = useRouter();
+  const { setUser } = useUser(); // Access setUser from global context
 
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
@@ -54,6 +55,7 @@ export default function Signup() {
   const handleSignup = async () => {
     if (!validateInputs()) return;
     setLoading(true);
+
     try {
       const response = await fetch('https://your-backend.com/api/signup/', {
         method: 'POST',
@@ -67,9 +69,19 @@ export default function Signup() {
           phone: phone || null,
         }),
       });
+
       const data = await response.json();
+
       if (response.ok) {
-        // router.replace({ pathname: '/verifyotp', params: { email } });
+        // ✅ Save user globally
+        setUser({
+          name: firstName,
+          email: email,
+          username: username,
+        });
+
+        // ✅ Navigate to OTP verification
+        router.replace('/verify');
       } else {
         setErrorMessage(data.message || 'Signup failed. Try again.');
       }
